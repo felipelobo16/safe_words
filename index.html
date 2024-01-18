@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BIP-0039 Words Viewer</title>
+  <style>
+    .wordBox {
+      border: 1px solid #ccc;
+      padding: 5px;
+      margin: 5px;
+      display: inline-block;
+      cursor: pointer;
+      width: 150px; /* Defina a largura desejada */
+      box-sizing: border-box; /* Garante que a largura inclua padding e borda */
+    }
+
+    .selected {
+      border-color: red;
+    }
+
+    button {
+      padding: 1px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+<h1>BIP-0039 Words Viewer</h1>
+<div>
+  <label for="seedInput">Seed:</label>
+  <input type="text" id="seedInput">
+  <button onclick="embaralharPalavras()">Generate</button>
+</div>
+</br>
+<input type="file" id="inputArquivo">
+<div id="wordList"></div>
+<script>
+  function lerArquivo(arquivo, callback) {
+    const leitor = new FileReader();
+    leitor.onload = function (e) {
+      callback(e.target.result);
+    };
+    leitor.readAsText(arquivo);
+  }
+
+  function exibirPalavras(palavras) {
+  const wordListDiv = document.getElementById("wordList");
+  wordListDiv.innerHTML = ""; // Limpa a lista antes de adicionar novas palavras
+
+  const palavrasArray = palavras.trim().split("\n");
+  palavrasArray.forEach((palavra, index) => {
+    const formattedIndex = (index + 1).toString().padStart(4, '0');
+    
+    const wordBox = document.createElement("div");
+    wordBox.className = "wordBox";
+    wordBox.textContent = `${formattedIndex}. ${palavra.trim()}`;
+
+    wordBox.addEventListener("click", function () {
+      wordBox.classList.toggle("selected");
+    });
+
+    wordListDiv.appendChild(wordBox);
+  });
+}
+
+  function embaralharArray(array, seed) {
+    const hash = (s) => {
+      let h = 0;
+      for (let i = 0; i < s.length; i++) {
+        h = (h << 5) - h + s.charCodeAt(i);
+      }
+      return h;
+    };
+
+    const arrayEmbaralhado = array.slice().sort((a, b) => hash(seed + a) - hash(seed + b));
+    return arrayEmbaralhado;
+  }
+
+  function embaralharPalavras() {
+    const seedInput = document.getElementById("seedInput");
+    const seed = seedInput.value;
+
+    const palavrasDiv = document.getElementById("wordList");
+    const palavrasArray = Array.from(palavrasDiv.children).map(wordBox => wordBox.textContent.split('. ')[1]);
+
+    const palavrasEmbaralhadas = embaralharArray(palavrasArray, seed);
+
+    exibirPalavras(palavrasEmbaralhadas.join("\n"));
+  }
+
+  document.getElementById("inputArquivo").addEventListener("change", function (event) {
+    const arquivo = event.target.files[0];
+    if (arquivo) {
+      lerArquivo(arquivo, function (conteudo) {
+        exibirPalavras(conteudo);
+      });
+    }
+  });
+</script>
+
+</body>
+</html>
