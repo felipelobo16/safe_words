@@ -11,8 +11,8 @@
       margin: 5px;
       display: inline-block;
       cursor: pointer;
-      width: 150px; /* Defina a largura desejada */
-      box-sizing: border-box; /* Garante que a largura inclua padding e borda */
+      width: 150px;
+      box-sizing: border-box; 
     }
 
     .selected {
@@ -46,7 +46,7 @@
 
   function exibirPalavras(palavras) {
   const wordListDiv = document.getElementById("wordList");
-  wordListDiv.innerHTML = ""; // Limpa a lista antes de adicionar novas palavras
+  wordListDiv.innerHTML = "";
 
   const palavrasArray = palavras.trim().split("\n");
   palavrasArray.forEach((palavra, index) => {
